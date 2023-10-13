@@ -1,4 +1,7 @@
 
+using Kukoo.Clients;
+using Kukoo.Configs;
+
 namespace Kukoo
 {
     public class Program
@@ -14,7 +17,13 @@ namespace Kukoo
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            builder.Services.AddSingleton<ADXClient>();
+
             var app = builder.Build();
+
+            builder.Configuration
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{app.Environment.EnvironmentName}.json", true, true);
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

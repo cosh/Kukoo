@@ -7,6 +7,7 @@ using Kukoo.Attributes;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using Kukoo.Models;
+using Kukoo.Clients;
 
 namespace Kukoo.Controllers
 { 
@@ -15,7 +16,14 @@ namespace Kukoo.Controllers
     /// </summary>
     [ApiController]
     public class QueryApiController : ControllerBase
-    { 
+    {
+        private ADXClient _client;
+
+        public QueryApiController (ADXClient client)
+        {
+            _client = client;
+        }
+
         /// <summary>
         /// 
         /// </summary>
