@@ -7,6 +7,8 @@ using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using Kukoo.Models;
 using Swashbuckle.AspNetCore.Annotations;
+using Kukoo.Clients;
+using Kukoo.Configs;
 
 namespace Kukoo.Controllers
 { 
@@ -15,7 +17,21 @@ namespace Kukoo.Controllers
     /// </summary>
     [ApiController]
     public class ModelSettingsApiController : ControllerBase
-    { 
+    {
+
+        private readonly ILogger _logger;
+        private ADXClient _client;
+        private SettingsTimeSeries _settings;
+
+        public ModelSettingsApiController(IConfiguration configuration, ILogger<ModelSettingsApiController> logger, ADXClient client)
+        {
+            _logger = logger;
+            _client = client;
+            _settings = new();
+            configuration.GetSection(nameof(SettingsTimeSeries))
+                .Bind(_settings);
+        }
+
         /// <summary>
         /// 
         /// </summary>

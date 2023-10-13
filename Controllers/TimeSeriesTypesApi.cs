@@ -7,15 +7,31 @@ using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using Kukoo.Models;
 using Kukoo.Attributes;
+using Kukoo.Clients;
+using Kukoo.Configs;
 
 namespace Kukoo.Controllers
-{ 
+{
     /// <summary>
     /// 
     /// </summary>
     [ApiController]
     public class TimeSeriesTypesApiController : ControllerBase
-    { 
+    {
+
+        private readonly ILogger _logger;
+        private ADXClient _client;
+        private SettingsTimeSeries _settings;
+
+        public TimeSeriesTypesApiController(IConfiguration configuration, ILogger<TimeSeriesTypesApiController> logger, ADXClient client)
+        {
+            _logger = logger;
+            _client = client;
+            _settings = new();
+            configuration.GetSection(nameof(SettingsTimeSeries))
+                .Bind(_settings);
+        }
+
         /// <summary>
         /// 
         /// </summary>

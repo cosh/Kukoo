@@ -8,6 +8,8 @@ using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using Kukoo.Models;
 using Kukoo.Clients;
+using Kukoo.Configs;
+using Microsoft.Extensions.Configuration;
 
 namespace Kukoo.Controllers
 { 
@@ -17,11 +19,17 @@ namespace Kukoo.Controllers
     [ApiController]
     public class QueryApiController : ControllerBase
     {
+        private readonly ILogger _logger;
         private ADXClient _client;
+        private SettingsTimeSeries _settings;
 
-        public QueryApiController (ADXClient client)
+        public QueryApiController (IConfiguration configuration, ILogger<QueryApiController> logger, ADXClient client)
         {
+            _logger = logger;
             _client = client;
+            _settings = new();
+                configuration.GetSection(nameof(SettingsTimeSeries))
+                    .Bind(_settings);
         }
 
         /// <summary>
@@ -43,12 +51,15 @@ namespace Kukoo.Controllers
         [SwaggerResponse(statusCode: 200, type: typeof(QueryResultPage), description: "Successful query.")]
         [SwaggerResponse(statusCode: 0, type: typeof(TsiError), description: "Unexpected error.")]
         public virtual IActionResult QueryExecute([FromQuery][Required()]string apiVersion, [FromBody]QueryRequest parameters, [FromQuery]string storeType, [FromHeader]string xMsContinuation, [FromHeader]string xMsClientRequestId, [FromHeader]string xMsClientSessionId)
-        { 
+        {
             //TODO: Uncomment the next line to return response 200 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(200, default(QueryResultPage));
 
             //TODO: Uncomment the next line to return response 0 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(0, default(TsiError));
+
+            //just a test
+            var result = _client.KustoClient.ExecuteQuery(_settings.DatabaseName, $"{_settings.TelemetryTable} | take 10", Helper.CreateClientRequestProperties());
 
             string exampleJson = null;
             exampleJson = "{\n  \"bytes\": [],\n  \"empty\": true\n}";
